@@ -15,6 +15,13 @@ import (
 // AttestationBits is formatted as a serialized SSZ bitlist, including the delimit bit
 type AttestationBits []byte
 
+func NewAttestationBits(length uint64) AttestationBits {
+	ret := make(AttestationBits, length/8+1)
+	// Set most significant bit for length bit.
+	ret[length/8] |= uint8(1 << (length % 8))
+	return ret
+}
+
 func (li AttestationBits) View(spec *common.Spec) *AttestationBitsView {
 	v, _ := AttestationBitsType(spec).Deserialize(codec.NewDecodingReader(bytes.NewReader(li), uint64(len(li))))
 	return &AttestationBitsView{v.(*BitListView)}
